@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PCVC WORLD</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 1rem;
+    }
+    button {
+      cursor: pointer;
+      padding: 10px 25px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.1rem;
+      width: 90%;
+      max-width: 400px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .hidden {
+      display: none;
+    }
+    .explode {
+      animation: explodeAnim 0.5s forwards;
+    }
+    @keyframes explodeAnim {
+      to {
+        opacity: 0;
+        transform: scale(4) rotate(720deg);
+      }
+    }
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff0f5;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      max-width: 90vw;
+      width: 350px;
+      z-index: 1000;
+      text-align: center;
+    }
+    #popup img {
+      width: 100px;
+      margin-bottom: 1rem;
+    }
+    #popup p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+    #popup button {
+      font-weight: 700;
+      padding: 10px 25px;
+      margin: 0 10px;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    #btn-think {
+      background-color: #4caf50;
+      color: white;
+    }
+    #btn-no {
+      background-color: #e53935;
+      color: white;
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="step1" class="step">
+    <h2>เริ่มทำแบบสอบถาม</h2>
+    <button id="startBtn">เริ่มเลย</button>
+  </div>
+
+  <div id="step2" class="step hidden">
+    <h2>ถ้ามีโอกาสทำสิ่งนึงก่อนตายจะทำอะไร</h2>
+    <input type="text" placeholder="พิมพ์คำตอบที่นี่..." />
+    <button class="nextBtn">ต่อไป</button>
+  </div>
+
+  <div id="step3" class="step hidden">
+    <h2>การบ้านชิ้นสุดท้ายในชีวิตนิสิตจะส่งอะไร</h2>
+    <input type="text" placeholder="พิมพ์คำตอบที่นี่..." />
+    <button class="nextBtn">ต่อไป</button>
+  </div>
+
+  <div id="step4" class="step hidden">
+    <h2>รู้มั้ยมีคนคิดถึงอยู่? 🥺</h2>
+    <input type="text" placeholder="ตอบได้เลย..." />
+    <button id="showPopupBtn">ต่อไป</button>
+  </div>
+
+  <div id="popup" class="hidden">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="แมวการ์ตูน" />
+    <p>แบร่ 😼 อยากให้รู้ว่าคิดถึงแต่ไม่รู้จะใช้วิธีไหนดี<br />คิดถึงกันมั้ย?</p>
+    <button id="btn-think">คิดถึง</button>
+    <button id="btn-no">ไม่</button>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const steps = document.querySelectorAll('.step');
+    const nextBtns = document.querySelectorAll('.nextBtn');
+    const showPopupBtn = document.getElementById('showPopupBtn');
+    const popup = document.getElementById('popup');
+    const btnThink = document.getElementById('btn-think');
+    const btnNo = document.getElementById('btn-no');
+
+    let noClickCount = 0;
+
+    startBtn.addEventListener('click', () => {
+      startBtn.classList.add('explode');
+      setTimeout(() => {
+        steps[0].classList.add('hidden');
+        steps[1].classList.remove('hidden');
+      }, 500);
+    });
+
+    nextBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        steps[index + 1].classList.add('hidden');
+        steps[index + 2].classList.remove('hidden');
+      });
+    });
+
+    showPopupBtn.addEventListener('click', () => {
+      steps[3].classList.add('hidden');
+      popup.classList.remove('hidden');
+      resetNoBtnPosition();
+    });
+
+    btnThink.addEventListener('click', () => {
+      alert('ทีหลังก็บอกหน่อยสิจะได้รู้อ่ะ 🥹');
+    });
+
+    btnNo.addEventListener('click', () => {
+      noClickCount++;
+      // ย้ายปุ่มไปเรื่อย ๆ แบบสุ่มในพื้นที่หน้าจอ
+      const maxX = window.innerWidth - btnNo.offsetWidth;
+      const maxY = window.innerHeight - btnNo.offsetHeight;
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
+
+      btnNo.style.left = randomX + 'px';
+      btnNo.style.top = randomY + 'px';
+
+      // เล็กลงนิด ๆ
+      const scale = Math.max(0.3, 1 - noClickCount * 0.05);
+      btnNo.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+      // ทำให้ปุ่มคิดถึงเด่นขึ้นเรื่อย ๆ
+      btnThink.style.boxShadow = `0 0 20px rgba(76, 175, 80, ${Math.min(1, noClickCount * 0.2)})`;
+      btnThink.style.transform = `scale(${1 + Math.min(0.5, noClickCount * 0.1)})`;
+    });
+
+    function resetNoBtnPosition() {
+      btnNo.style.left = '50%';
+      btnNo.style.top = '70%';
+      btnNo.style.transform = 'translate(-50%, -50%) scale(1)';
+      noClickCount = 0;
+      btnThink.style.boxShadow = '';
+      btnThink.style.transform = '';
+    }
+  </script>
+
+</body>
+</html>
